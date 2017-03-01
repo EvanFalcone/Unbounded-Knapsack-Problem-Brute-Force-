@@ -5,6 +5,7 @@ ShipmentQuantities <- function (FBAprofitability, AmazonProductData, MaxWeight, 
 ## DYNAMIC PROGRAMMING METHOD - applicable for larger number of items on FBA list (still scales slowly so be careful!):
     ## Get the units right! With the divisions included, weight = lbs & volume = inches^3:
     
+    ## Read in the data - see data handbook for tracking reference:
     Data_ <- as.data.frame(structure(list(item = as.character(profitProductInfo[,1]),
                                           value = as.numeric(profitProductInfo[,2]),
                                           weight = as.numeric((profitProductInfo[,7]/453.592)),
@@ -13,6 +14,7 @@ ShipmentQuantities <- function (FBAprofitability, AmazonProductData, MaxWeight, 
                                                               row.names = c(NA, 3L),
                                                               class = "data.frame"))))
     
+    ## Knapsack function for volume:
     knapsack_volume <- function(Data, W, Volume, full_K) {
       
       ## Data must have the columns with names: item, value, weight and volume.
@@ -50,7 +52,7 @@ ShipmentQuantities <- function (FBAprofitability, AmazonProductData, MaxWeight, 
       return(list(K = K, Item = K_item))
     }
     
-    
+    ## Find items for "best" knapsack volume:
     Un_knapsack <- function(Data, W, V)
     {
       K <- list();K_item <- list()
@@ -67,6 +69,7 @@ ShipmentQuantities <- function (FBAprofitability, AmazonProductData, MaxWeight, 
       
     }
     
+    ## Function for retrieving items from Data for Knapsack:
     retrieve_info <- function(knapsack, Data)
     {
       W <- dim(knapsack$K)[1]
@@ -87,6 +90,7 @@ ShipmentQuantities <- function (FBAprofitability, AmazonProductData, MaxWeight, 
       return(items)
     }
     
+    ## Combine results:
     main_knapsack <- function(Data, W, Volume)
     {
       knapsack_result <- Un_knapsack(Data,W,Volume)
